@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
 
@@ -13,12 +14,18 @@ PRICES_URL = 'https://suppliers-api.wildberries.ru/public/api/v1/info'
 GOODS_URL = 'https://suppliers-api.wildberries.ru/content/v1/cards/cursor/list'
 
 GOODS_QUERY = {
-          "sort": {
-              "cursor": {
-                  "limit": 1000
-              },
-              "filter": {
-                  "withPhoto": -1
-              }
-          }
+    "sort": {
+        "cursor": {
+            "limit": 1000
+        },
+        "filter": {
+            "withPhoto": -1
         }
+    }
+}
+
+# Логирование
+FILE_LOG = 'wildberries_api.log'
+logging.basicConfig(level=logging.INFO, filename=FILE_LOG,
+                    format="%(asctime)s %(levelname)s %(message)s")
+LOGGER = logging.getLogger('wildberries')

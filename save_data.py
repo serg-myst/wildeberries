@@ -2,13 +2,12 @@ from pprint import pprint
 from pydantic import ValidationError
 from database import session_maker
 from sqlalchemy import insert, delete, select, update
-import logging
 
 session = session_maker()
 
 
 def save_data(item_list, table):
-    # Данных у нас совсем мало. Сначала все удалим все и добавим новые данные
+    # Данных у нас совсем мало. Сначала все удалим и добавим новые данные
     try:
         query = delete(table)
         session.execute(query)

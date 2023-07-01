@@ -1,6 +1,8 @@
-from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY
+from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY, FILE_LOG
 import requests
 import json
+import time
+from config import LOGGER as log
 
 
 def headers():
@@ -8,12 +10,18 @@ def headers():
 
 
 def get_office_api():
-    response = requests.get(OFFICES_URL, headers=headers())
-    if response.status_code != 200:
-        print(f'Ошибка получения данных по площадкам. Статус ответа {response.status_code}')
-        return []
-    content = json.loads(response.content)
-    return content
+    while True:
+        try:
+            response = requests.get(OFFICES_URL, headers=headers())
+            if response.status_code != 200:
+                log.error(f'Ошибка получения данных по площадкам. Статус ответа {response.status_code}')
+                return []
+            content = json.loads(response.content)
+            log.info(f'Получен данные с {OFFICES_URL}')
+            return content
+        except ConnectionError:
+            log.exception(f'Ошибка ConnectionError. Данные не получены {OFFICES_URL}')
+            time.sleep(1)
 
 
 def get_warehouse_api():
@@ -50,5 +58,3 @@ def get_goods_api():
 
 if __name__ == '__main__':
     pass
-    # get_price_api()
-    # get_goods_api()
