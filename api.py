@@ -7,12 +7,29 @@ def headers():
     return {'Authorization': TOKEN}
 
 
+def get_office_api():
+    response = requests.get(OFFICES_URL, headers=headers())
+    if response.status_code != 200:
+        print(f'Ошибка получения данных по площадкам. Статус ответа {response.status_code}')
+        return []
+    content = json.loads(response.content)
+    return content
+
+
+def get_warehouse_api():
+    response = requests.get(WAREHOUSES_URL, headers=headers())
+    if response.status_code != 200:
+        print(f'Ошибка получения данных по складам. Статус ответа {response.status_code}')
+        return []
+    content = json.loads(response.content)
+    return content
+
+
 def get_price_api():
     response = requests.get(PRICES_URL, headers=headers())
     if response.status_code != 200:
         print(f'Ошибка получения данных по ценам. Статус ответа {response.status_code}')
         return []
-
     content = json.loads(response.content)
     return content
 
@@ -23,7 +40,6 @@ def get_goods_api():
         print(f'Ошибка получения данных по товарам. Статус ответа {response.status_code}')
         # Записать в логи ошибку
         return []
-
     try:
         content = json.loads(response.content)
         return content.get('data').get('cards')

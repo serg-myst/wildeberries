@@ -12,6 +12,12 @@ class Office(BaseModel):
     selected: bool
 
 
+class Warehouse(BaseModel):
+    id: int
+    office: int = Field(alias='officeId')
+    name: str
+
+
 class Good(BaseModel):
     id: int = Field(alias='nmID')
     updateAt: datetime

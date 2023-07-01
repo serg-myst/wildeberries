@@ -15,6 +15,14 @@ office = Table(
     Column('selected', Boolean),
 )
 
+warehouse = Table(
+    'warehouse',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column('office', Integer, ForeignKey(office.c.id)),
+    Column('name', String),
+)
+
 good = Table(
     'good',
     metadata,
