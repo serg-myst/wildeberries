@@ -40,7 +40,8 @@ def get_wb_data(table, model, method):
 def fill_delivery():
     query = select(func.count()).select_from(delivery_type)
     res = session.execute(query).scalar()
-    values_list = [{'id':1,'enum':'dbs'},{'id':2,'enum':'fbs'},]
+    values_list = [{'id': 1, 'enum': 'dbs', 'name': 'Доставка на склад Wildberries'},
+                   {'id': 2, 'enum': 'fbs', 'name': 'Доставка силами продавца'}, ]
     if res == 0:
         query = insert(delivery_type).values(values_list)
         session.execute(query)

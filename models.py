@@ -49,6 +49,7 @@ delivery_type = Table(
     metadata,
     Column('id', Integer, primary_key=True),
     Column('enum', String),
+    Column('name', String),
 )
 
 order = Table(
