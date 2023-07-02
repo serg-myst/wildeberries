@@ -43,3 +43,10 @@ price = Table(
     Column('discount', Integer),
     Column('promoCode', Integer),
 )
+
+delivery_type = Table(
+    'delivery_type',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column('enum', String),
+)

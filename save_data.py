@@ -1,8 +1,8 @@
-from pprint import pprint
 from pydantic import ValidationError
 from database import session_maker
-from sqlalchemy import insert, delete, select, update
+from sqlalchemy import insert, delete, select, update, func
 from config import LOGGER as log
+from models import delivery_type
 
 session = session_maker()
 
@@ -35,3 +35,13 @@ def get_wb_data(table, model, method):
             item_list.append(item.dict())
     if len(item_list) > 0:
         save_data(item_list, table)
+
+
+def fill_delivery():
+    query = select(func.count()).select_from(delivery_type)
+    res = session.execute(query).scalar()
+    values_list = [{'id':1,'enum':'dbs'},{'id':2,'enum':'fbs'},]
+    if res == 0:
+        query = insert(delivery_type).values(values_list)
+        session.execute(query)
+        session.commit()

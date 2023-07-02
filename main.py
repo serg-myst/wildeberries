@@ -2,11 +2,12 @@ from save_data import get_wb_data
 from models import office, warehouse, good, price
 from schemas import Office, Warehouse, Good, Price
 from api import get_office_api, get_warehouse_api, get_goods_api, get_price_api
-from config import FILE_LOG
 from config import LOGGER as log
+from save_data import fill_delivery
 
 if __name__ == '__main__':
     log.info(f'API. Начало получения данных.')
+    fill_delivery()
     get_wb_data(office, Office, get_office_api)
     get_wb_data(warehouse, Warehouse, get_warehouse_api)
     get_wb_data(good, Good, get_goods_api)
