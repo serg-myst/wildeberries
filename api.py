@@ -1,7 +1,8 @@
-from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY, FILE_LOG
+from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY
 import requests
+from requests.exceptions import ConnectionError as ConnectionErrorRequests
+from requests.exceptions import InvalidSchema
 import json
-import time
 from config import LOGGER as log
 
 
@@ -10,50 +11,61 @@ def headers():
 
 
 def get_office_api():
-    while True:
-        try:
-            response = requests.get(OFFICES_URL, headers=headers())
-            if response.status_code != 200:
-                log.error(f'Ошибка получения данных по площадкам. Статус ответа {response.status_code}')
-                return []
-            content = json.loads(response.content)
-            log.info(f'Получен данные с {OFFICES_URL}')
-            return content
-        except ConnectionError:
-            log.exception(f'Ошибка ConnectionError. Данные не получены {OFFICES_URL}')
-            time.sleep(1)
+    try:
+        response = requests.get(OFFICES_URL, headers=headers())
+        if response.status_code != 200:
+            log.error(f'Ошибка получения данных по торговым площадкам. Статус ответа {response.status_code}')
+            raise ConnectionErrorRequests
+        content = json.loads(response.content)
+        log.info(f'Получены данные по торговым площадкам с {OFFICES_URL}')
+        return content
+    except ConnectionError as e:
+        log.exception(f'Ошибка ConnectionError. Данные не получены {OFFICES_URL}. Ошибка: {e}')
 
 
 def get_warehouse_api():
-    response = requests.get(WAREHOUSES_URL, headers=headers())
-    if response.status_code != 200:
-        print(f'Ошибка получения данных по складам. Статус ответа {response.status_code}')
-        return []
-    content = json.loads(response.content)
-    return content
+    try:
+        response = requests.get(WAREHOUSES_URL, headers=headers())
+        if response.status_code != 200:
+            log.error(f'Ошибка получения данных по складам продавца. Статус ответа {response.status_code}')
+            raise ConnectionErrorRequests
+        content = json.loads(response.content)
+        log.info(f'Получены данные по складам продавца с {WAREHOUSES_URL}')
+        return content
+    except ConnectionError as e:
+        log.exception(f'Ошибка ConnectionError. Данные не получены {WAREHOUSES_URL}. Ошибка: {e}')
 
 
 def get_price_api():
-    response = requests.get(PRICES_URL, headers=headers())
-    if response.status_code != 200:
-        print(f'Ошибка получения данных по ценам. Статус ответа {response.status_code}')
-        return []
-    content = json.loads(response.content)
-    return content
+    try:
+        response = requests.get(PRICES_URL, headers=headers())
+        if response.status_code != 200:
+            log.error(f'Ошибка получения данных по ценам. Статус ответа {response.status_code}')
+            raise ConnectionErrorRequests
+        content = json.loads(response.content)
+        log.info(f'Получены данные по ценам с {PRICES_URL}')
+        return content
+    except ConnectionError as e:
+        log.exception(f'Ошибка ConnectionError. Данные не получены {PRICES_URL}. Ошибка: {e}')
 
 
 def get_goods_api():
-    response = requests.post(GOODS_URL, json=GOODS_QUERY, headers=headers())
-    if response.status_code != 200:
-        print(f'Ошибка получения данных по товарам. Статус ответа {response.status_code}')
-        # Записать в логи ошибку
-        return []
     try:
+        response = requests.post(GOODS_URL, json=GOODS_QUERY, headers=headers())
+        if response.status_code != 200:
+            log.error(f'Ошибка получения данных по товарам. Статус ответа {response.status_code}')
+            raise ConnectionErrorRequests
         content = json.loads(response.content)
-        return content.get('data').get('cards')
-    except AttributeError as e:
-        # Записать в логи ошибку
-        return []
+        content_data = content.get('data').get('cards')
+        if content_data is None:
+            log.error(
+                f'Ошибка получения данных по товарам. Ошибка разбора полученного файла.'
+                f' Нет ключа: get("data").get("cards")')
+            raise InvalidSchema
+        log.info(f'Получены данные по товарам с {GOODS_URL}')
+        return content_data
+    except ConnectionError as e:
+        log.exception(f'Ошибка ConnectionError. Данные не получены {GOODS_URL}. Ошибка: {e}')
 
 
 if __name__ == '__main__':
