@@ -50,3 +50,36 @@ delivery_type = Table(
     Column('id', Integer, primary_key=True),
     Column('enum', String),
 )
+
+order = Table(
+    'order',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column('createdAt', DateTime),
+    Column('warehouseId', ForeignKey(warehouse.c.id)),
+    Column('rid', String),  # Идентификатор сборочного задания в системе Wildberries
+    Column('supplyId', String),  # Идентификатор поставки. Возвращается, если заказ закреплён за поставкой
+    Column('address', String),  # Aдрес покупателя для доставки
+    Column('user', String),  # Aдрес покупателя для доставки
+    Column('orderUid', String),  # Идентификатор транзакции для группировки сборочных заданий
+    Column('deliveryType', ForeignKey(delivery_type.c.id)),
+    # Тип доставки: fbs - доставка на склад Wildberries, dbs - доставка силами продавца
+)
+
+order_item = Table(
+    'order_item',
+    metadata,
+    Column('orderId', Integer, ForeignKey(order.c.id)),
+    Column('nmId', Integer, ForeignKey(good.c.id)),
+    Column('price', Integer),  # Цена в валюте продажи с учетом всех скидок, умноженная на 100
+    Column('article', String),  # Артикул продавца
+    Column('isLargeCargo', Boolean),
+)
+
+new_order = Table(
+    'new_order',
+    metadata,
+    Column('orderId', Integer, ForeignKey(order.c.id)),
+    Column('send', Boolean),
+    Column('sendAt', DateTime),
+)
