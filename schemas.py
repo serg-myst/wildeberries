@@ -48,7 +48,6 @@ class Order(BaseModel):
 
     @validator('deliveryType')
     def set_deliveryType(cls, d: str) -> str:
-        print(f'AAAAAAAAA {d}')
         if d == 'dbs':
             return 1
         if d == 'fbs':
