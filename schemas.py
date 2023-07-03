@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from datetime import datetime
 
 
@@ -33,3 +33,22 @@ class Price(BaseModel):
     price: int
     discount: int
     promoCode: int
+
+
+class Order(BaseModel):
+    id: int
+    createdAt: datetime
+    warehouseId: int
+    rid: str
+    supplyId: str
+    address: str
+    user: str
+    orderUid: str
+    deliveryType: int
+
+    @validator('deliveryType')
+    def set_deliveryType(cls, d: str) -> str:
+        if d == 'dbs':
+            return 1
+        if d == 'fbs':
+            return 2

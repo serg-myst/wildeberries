@@ -46,3 +46,6 @@ def fill_delivery():
         query = insert(delivery_type).values(values_list)
         session.execute(query)
         session.commit()
+
+
+

@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.INFO, filename=FILE_LOG,
                     format="%(asctime)s %(levelname)s %(message)s", encoding='utf-8')
 LOGGER = logging.getLogger('wildberries')
 
-# Отправк, получение почты
+# Отправка, получение почты
 MAIL_FROM = os.environ.get('MAIL_FROM')
 MAIL_TO = os.environ.get('MAIL_TO')
 PASSWORD = os.environ.get('PASSWORD')
