@@ -6,6 +6,9 @@ from models import delivery_type
 
 session = session_maker()
 
+import json
+from schemas import Order
+
 
 def save_data(item_list, table):
     # Данных у нас совсем мало. Сначала все удалим и добавим новые данные
@@ -48,4 +51,15 @@ def fill_delivery():
         session.commit()
 
 
-
+def get_wb_order():
+    file_name = 'response_1688373087780_new.json'
+    with open(file_name, 'r', encoding='utf-8') as f:
+        data_list = json.load(f)
+        print(data_list)
+        for data in data_list.get('orders'):
+            try:
+                item = Order(**data)
+            except ValidationError as err:
+                print(err.json())
+            else:
+                print(item)

@@ -40,15 +40,20 @@ class Order(BaseModel):
     createdAt: datetime
     warehouseId: int
     rid: str
-    supplyId: str
-    address: str
-    user: str
+    supplyId: str | None = None
+    address: str | None = None
+    user: str | None = None
     orderUid: str
-    deliveryType: int
+    deliveryType: str
 
     @validator('deliveryType')
     def set_deliveryType(cls, d: str) -> str:
+        print(f'AAAAAAAAA {d}')
         if d == 'dbs':
             return 1
         if d == 'fbs':
             return 2
+
+    @property
+    def delivery_type(self):
+        return int(self.deliveryType)
