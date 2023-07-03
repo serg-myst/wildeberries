@@ -47,12 +47,15 @@ class Order(BaseModel):
     deliveryType: str
 
     @validator('deliveryType')
-    def set_deliveryType(cls, d: str) -> str:
+    def set_deliveryType(cls, d: str) -> int:
         if d == 'dbs':
             return 1
         if d == 'fbs':
             return 2
 
-    @property
-    def delivery_type(self):
-        return int(self.deliveryType)
+
+class OrderItem(BaseModel):
+    orderId: int = Field(alias='id')
+    nmId: int
+    price: int
+    isLargeCargo: bool
