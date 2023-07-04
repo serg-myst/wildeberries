@@ -84,3 +84,9 @@ new_order = Table(
     Column('send', Boolean),
     Column('sendAt', DateTime),
 )
+
+exchange = Table(
+    'exchange',
+    metadata,
+    Column('is_started', Integer),  # 0 - обмен не запущен, 1 - обмен запущен
+)
