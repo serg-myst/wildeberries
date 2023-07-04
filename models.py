@@ -38,7 +38,7 @@ good = Table(
 price = Table(
     'price',
     metadata,
-    Column('nmID', Integer, ForeignKey(good.c.id)),
+    Column('nmID', Integer, ForeignKey(good.c.id), unique=True),
     Column('price', Integer),
     Column('discount', Integer),
     Column('promoCode', Integer),
@@ -80,7 +80,7 @@ order_item = Table(
 new_order = Table(
     'new_order',
     metadata,
-    Column('orderId', Integer, ForeignKey(order.c.id)),
+    Column('orderId', Integer, ForeignKey(order.c.id), unique=True),
     Column('send', Boolean),
     Column('sendAt', DateTime),
 )

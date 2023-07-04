@@ -10,37 +10,28 @@ session = session_maker()
 import json
 from schemas import Order, OrderItem
 
-query_1 = ''
+
+def save_data(item, table, id):
+    insert_stmt = insert(table).values(item)
+    do_update_stmt = insert_stmt.on_conflict_do_update(
+        index_elements=[id],
+        set_=item)
+    session.execute(do_update_stmt)
 
 
-def save_data(item_list, table):
-    # Данных у нас совсем мало. Сначала все удалим и добавим новые данные
-    try:
-        query = delete(table)
-        session.execute(query)
-        session.commit()
-
-        query = insert(table).values(item_list)
-        session.execute(query)
-        session.commit()
-        log.info(f'Записаны данные по {table}')
-    except SystemError as e:
-        log.error(f'Ошибка записи данных по {table}. {e}')
-        raise e
-
-
-def get_wb_data(table, model, method):
+def get_wb_data(table, model, method, id='id'):
     data_list = method()
-    item_list = []
     for data in data_list:
         try:
             item = model(**data)
         except ValidationError as err:
             log.error(f'Данные не прошли по схеме. {err.json()}')
         else:
-            item_list.append(item.dict())
-    if len(item_list) > 0:
-        save_data(item_list, table)
+            save_data(item.dict(), table, id)
+    try:
+        session.commit()
+    except SystemError as e:
+        log.error(f'Ошибка записи данных по {table}. {e}')
 
 
 def fill_delivery():
@@ -74,6 +65,7 @@ def save_order_item(item):
 
 
 def save(item):
+    print(item)
     insert_stmt = insert(order).values(item)
     do_update_stmt = insert_stmt.on_conflict_do_update(
         index_elements=['id'],
