@@ -55,7 +55,7 @@ def get_wb_order(method):
             order_row = OrderItem(**data)
             order_send = NewOrder(**data)
         except ValidationError as err:
-            print(err.json())
+            log.error(f'Данные не прошли по схеме. {err.json()}')
         else:
             save_data(item_head.dict(), order, ['id'])
             save_data(order_row.dict(), order_item, ['orderId', 'nmId'])
