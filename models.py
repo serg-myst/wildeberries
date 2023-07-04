@@ -73,7 +73,6 @@ order_item = Table(
     Column('orderId', Integer, ForeignKey(order.c.id)),
     Column('nmId', Integer, ForeignKey(good.c.id)),
     Column('price', Integer),  # Цена в валюте продажи с учетом всех скидок, умноженная на 100
-    Column('article', String),  # Артикул продавца
     Column('isLargeCargo', Boolean),
     PrimaryKeyConstraint('orderId', 'nmId', name='id'),
 )
