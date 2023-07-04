@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy import MetaData
 
 metadata = MetaData()
@@ -38,7 +38,7 @@ good = Table(
 price = Table(
     'price',
     metadata,
-    Column('nmID', Integer, ForeignKey(good.c.id), unique=True),
+    Column('nmID', Integer, ForeignKey(good.c.id), primary_key=True),
     Column('price', Integer),
     Column('discount', Integer),
     Column('promoCode', Integer),
@@ -75,12 +75,13 @@ order_item = Table(
     Column('price', Integer),  # Цена в валюте продажи с учетом всех скидок, умноженная на 100
     Column('article', String),  # Артикул продавца
     Column('isLargeCargo', Boolean),
+    PrimaryKeyConstraint('orderId', 'nmId', name='id'),
 )
 
 new_order = Table(
     'new_order',
     metadata,
-    Column('orderId', Integer, ForeignKey(order.c.id), unique=True),
+    Column('orderId', Integer, ForeignKey(order.c.id), primary_key=True),
     Column('send', Boolean),
     Column('sendAt', DateTime),
 )

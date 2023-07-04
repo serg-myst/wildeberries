@@ -45,30 +45,19 @@ def fill_delivery():
         session.commit()
 
 
-def save_order(item):
-    query = select(order)
-    res = session.execute(query).all()
-    print(res)
-    if not res:
-        query = insert(order).values(item.dict())
-        session.execute(query)
-        session.commit()
-
-
-def save_order_item(item):
-    query = select(order_item).where(order_item.c.nmId == item.nmId)
-    res = session.execute(query).scalar()
-    if not res:
-        query = insert(order_item).values(item.dict())
-        session.execute(query)
-        session.commit()
-
-
 def save(item):
     print(item)
     insert_stmt = insert(order).values(item)
     do_update_stmt = insert_stmt.on_conflict_do_update(
         index_elements=['id'],
+        set_=item)
+    session.execute(do_update_stmt)
+
+def save_order_row(item):
+    print(item)
+    insert_stmt = insert(order_item).values(item)
+    do_update_stmt = insert_stmt.on_conflict_do_update(
+        index_elements=['orderId','nmId'],
         set_=item)
     session.execute(do_update_stmt)
 
@@ -85,10 +74,8 @@ def get_wb_order():
             except ValidationError as err:
                 print(err.json())
             else:
-                # save_order(item_head)
-                # save_order_item(order_row)
-                item_list.append(item_head.dict())
                 save(item_head.dict())
-            session.commit()
+                save_order_row(order_row.dict())
+        session.commit()
 
 # https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#sqlite-on-conflict-insert

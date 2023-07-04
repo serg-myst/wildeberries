@@ -59,3 +59,7 @@ class OrderItem(BaseModel):
     nmId: int
     price: int
     isLargeCargo: bool
+
+
+class NewOrder(BaseModel):
+    orderId: int = Field(alias='id')
