@@ -1,4 +1,4 @@
-from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY
+from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY, ORDERS_URL
 import requests
 from requests.exceptions import ConnectionError as ConnectionErrorRequests
 from requests.exceptions import InvalidSchema
@@ -66,6 +66,19 @@ def get_goods_api():
         return content_data
     except ConnectionError as e:
         log.exception(f'Ошибка ConnectionError. Данные не получены {GOODS_URL}. Ошибка: {e}')
+
+
+def get_orders_api():
+    try:
+        response = requests.get(ORDERS_URL, headers=headers())
+        if response.status_code != 200:
+            log.error(f'Ошибка получения данных по новым заказам. Статус ответа {response.status_code}')
+            raise ConnectionErrorRequests
+        content = json.loads(response.content)
+        log.info(f'Получены данные по новым заказам с {ORDERS_URL}')
+        return content.get('orders')
+    except ConnectionError as e:
+        log.exception(f'Ошибка ConnectionError. Данные не получены {ORDERS_URL}. Ошибка: {e}')
 
 
 if __name__ == '__main__':

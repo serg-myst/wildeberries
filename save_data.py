@@ -1,25 +1,27 @@
 from pydantic import ValidationError
 from database import session_maker
-from sqlalchemy import insert, delete, select, update, func
+from sqlalchemy import insert, select, func
 from config import LOGGER as log
-from models import delivery_type, order, order_item
+from models import delivery_type, order, order_item, new_order
 from sqlalchemy.dialects.sqlite import insert
-
-session = session_maker()
+from schemas import Order, OrderItem, NewOrder
 
 import json
-from schemas import Order, OrderItem
+
+session = session_maker()
 
 
 def save_data(item, table, id):
     insert_stmt = insert(table).values(item)
     do_update_stmt = insert_stmt.on_conflict_do_update(
-        index_elements=[id],
+        index_elements=id,
         set_=item)
     session.execute(do_update_stmt)
 
 
-def get_wb_data(table, model, method, id='id'):
+def get_wb_data(table, model, method, id=None):
+    if id is None:
+        id = ['id']
     data_list = method()
     for data in data_list:
         try:
@@ -45,6 +47,23 @@ def fill_delivery():
         session.commit()
 
 
+def get_wb_order(method):
+    data_list = method()
+    for data in data_list:
+        try:
+            item_head = Order(**data)
+            order_row = OrderItem(**data)
+            order_send = NewOrder(**data)
+        except ValidationError as err:
+            print(err.json())
+        else:
+            save_data(item_head.dict(), order, ['id'])
+            save_data(order_row.dict(), order_item, ['orderId', 'nmId'])
+            save_data(order_send.dict(), new_order, ['orderId'])
+    session.commit()
+
+
+# ТЕСТИРОВАНИЕ. УБРАТЬ!!!
 def save(item):
     print(item)
     insert_stmt = insert(order).values(item)
@@ -53,16 +72,17 @@ def save(item):
         set_=item)
     session.execute(do_update_stmt)
 
+
 def save_order_row(item):
     print(item)
     insert_stmt = insert(order_item).values(item)
     do_update_stmt = insert_stmt.on_conflict_do_update(
-        index_elements=['orderId','nmId'],
+        index_elements=['orderId', 'nmId'],
         set_=item)
     session.execute(do_update_stmt)
 
 
-def get_wb_order():
+def get_wb_order_test():
     file_name = 'response_1688373087780_new.json'
     item_list = []
     with open(file_name, 'r', encoding='utf-8') as f:

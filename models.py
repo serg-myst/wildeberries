@@ -53,7 +53,7 @@ delivery_type = Table(
 )
 
 order = Table(
-    'order',
+    'order_head',
     metadata,
     Column('id', Integer, primary_key=True),
     Column('createdAt', DateTime),
