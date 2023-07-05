@@ -2,21 +2,95 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import MAIL_FROM, MAIL_TO, SMTP, SMTP_PORT, PASSWORD
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from models import order, new_order, order_item, exchange, good, delivery_type, warehouse, office
+from database import session_maker
+from sqlalchemy import select
+from config import LOGGER as log
+
+session = session_maker()
+
+
+def mail_body():
+    env = Environment(
+        loader=FileSystemLoader("templates"))
+
+    template = env.get_template('order_header.htm')
+
+    query = session.query(new_order.c.orderId, order.c.createdAt, order.c.orderUid, delivery_type.c.enum,
+                          order_item.c.price, good.c.id, good.c.vendorCode,
+                          good.c.object, warehouse.c.name, office.c.address).where(
+        new_order.c.send == 0).order_by(order.c.createdAt).group_by(order.c.id, order_item.c.nmId)
+    query = query.join(order, order.c.id == new_order.c.orderId)
+    query = query.join(delivery_type, delivery_type.c.id == order.c.deliveryType)
+    query = query.join(warehouse, warehouse.c.id == order.c.warehouseId)
+    query = query.join(order_item, order_item.c.orderId == order.c.id)
+    query = query.join(good, good.c.id == order_item.c.nmId)
+    query = query.join(office, office.c.id == warehouse.c.office)
+    res = query.all()
+
+    print(res)
+    order_id = ''
+    orders_list = []
+    for row in res:
+        if order_id == row.orderId:
+            item = orders_list[len(orders_list)-1]
+            item['items'].append({'id': row.id, 'name': row.vendorCode, 'type': row.object, 'price': row.price})
+        else:
+            item_list = []
+            item_list.append({'id': row.id, 'name': row.vendorCode, 'type': row.object, 'price': row.price})
+            item = {
+                'id': row.orderId,
+                'items': item_list,
+            }
+            orders_list.append(item)
+        order_id = row.orderId
+
+    print(orders_list)
+
+    '''
+    for row_order in res:
+        queryitem = session.query(order_item, good).where(order_item.c.orderId == row_order.id)
+        queryitem = queryitem.join(good, good.c.id == order_item.c.nmId)
+        resitem = queryitem.all()
+
+        for row_item in resitem:
+            tm = env.get_template('order_row.htm')
+    '''
 
 
 def send_mail():
-    with open('mail.html', 'r', encoding='utf-8') as f:
-        email_content = f.read()
+    query = select(exchange)
+    res = session.execute(query).scalar()
+    if res == 0:
+        msg = mail_body()
 
-        msg = MIMEMultipart('alternative')  # Создаем сообщение
-        msg['From'] = MAIL_FROM  # Адресат
-        msg['To'] = MAIL_TO  # Получатель
-        msg['Subject'] = 'Заказы к сборке Wildberries'  # Тема сообщения
 
-        msg.attach(MIMEText(email_content, 'html'))  # Добавляем в сообщение HTML-фрагмент
+if __name__ == '__main__':
+    send_mail()
 
-        server = smtplib.SMTP(SMTP, SMTP_PORT)  # Создаем объект SMTP
-        server.starttls()
-        server.login(MAIL_FROM, PASSWORD)
-        server.send_message(msg)
-        server.quit()
+"""
+
+ # with open('mail.htm', 'r', encoding='utf-8') as f:
+        #    email_content = f.read()
+    
+       #     print(email_content)
+
+            '''
+            msg = MIMEMultipart('alternative')  # Создаем сообщение
+            msg['From'] = MAIL_FROM  # Отправитель
+            msg['To'] = MAIL_TO  # Получатель
+            msg['Subject'] = 'Заказы к сборке Wildberries'  # Тема сообщения
+    
+            msg.attach(MIMEText(email_content, 'html'))  # Добавляем в сообщение HTML-фрагмент
+    
+            server = smtplib.SMTP(SMTP, SMTP_PORT)  # Создаем объект SMTP
+            server.starttls()
+            server.login(MAIL_FROM, PASSWORD)
+            server.send_message(msg)
+            server.quit()
+            '''
+    #else:
+    #    log.error(f'Идет обмен данными. Письмо с новыми заказами не отправлено!')
+
+"""

@@ -81,7 +81,7 @@ new_order = Table(
     'new_order',
     metadata,
     Column('orderId', Integer, ForeignKey(order.c.id), primary_key=True),
-    Column('send', Boolean),
+    Column('send', Boolean, default=False),
     Column('sendAt', DateTime),
 )
 

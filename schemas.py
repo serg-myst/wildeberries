@@ -63,3 +63,4 @@ class OrderItem(BaseModel):
 
 class NewOrder(BaseModel):
     orderId: int = Field(alias='id')
+
