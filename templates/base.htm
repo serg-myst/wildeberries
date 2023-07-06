@@ -3,29 +3,28 @@
     <title>Новые заказы</title>
 </head>
 <body style="margin: 0; padding: 0; box-sizing: border-box">
-<div class="container" style="max-width: 900px;
+<div class="wrapper" style="background-color: #FFFAF0;">
+    <div class="container" style="max-width: 900px;
                   padding: 0 15px;
                   margin: auto;
-                  background-color: #FFFAF0;
                   ">
-    <div class="header" style="border-bottom: 1px solid #008B8B;">
-        <h2 style="text-align: center;
+        <div class="header" style="border-bottom: 1px solid #008B8B;">
+            <h2 style="text-align: center;
           color: #008B8B;
           font-weight: 400;
           font-size: 30px;
           line-height: 67px;
           margin: 0;
           ">Заказы к сборке
-        </h2>
-        <p class="title" style="color: #FF0000; font-weight: 400; font-size: 12px;padding-bottom: 10px;">
-            Примечание: fbs - доставка на склад Wildberries, dbs - доставка силами продавца
-        </p>
-    </div>
-    <div class="order" style="border-bottom: 1px solid #008B8B; padding-bottom: 10px;">
-
-        {% block content %}
-        {% endblock %}
-
+            </h2>
+            <p class="title" style="color: #FF0000; font-weight: 400; font-size: 12px;padding-bottom: 10px;">
+                Примечание: fbs - доставка на склад Wildberries, dbs - доставка силами продавца
+            </p>
+        </div>
+        <div class="order" style="border-bottom: 1px solid #008B8B; padding-bottom: 10px;">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 </div>
 </body>

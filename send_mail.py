@@ -12,11 +12,6 @@ session = session_maker()
 
 
 def mail_body():
-    env = Environment(
-        loader=FileSystemLoader("templates"))
-
-    template = env.get_template('order_header.htm')
-
     query = session.query(new_order.c.orderId, order.c.createdAt, order.c.orderUid, delivery_type.c.enum,
                           order_item.c.price, good.c.id, good.c.vendorCode,
                           good.c.object, warehouse.c.name, office.c.address).where(
@@ -29,34 +24,36 @@ def mail_body():
     query = query.join(office, office.c.id == warehouse.c.office)
     res = query.all()
 
-    print(res)
     order_id = ''
     orders_list = []
     for row in res:
         if order_id == row.orderId:
-            item = orders_list[len(orders_list)-1]
-            item['items'].append({'id': row.id, 'name': row.vendorCode, 'type': row.object, 'price': row.price})
+            item = orders_list[len(orders_list) - 1]
+            item['items'].append({'id': row.id, 'name': row.vendorCode, 'type': row.object, 'price': row.price / 100})
+            item['total'] += row.price / 100
         else:
             item_list = []
-            item_list.append({'id': row.id, 'name': row.vendorCode, 'type': row.object, 'price': row.price})
+            item_list.append(
+                {'id': row.id, 'name': row.vendorCode, 'type': row.object, 'price': row.price / 100})
             item = {
-                'id': row.orderId,
+                'number': row.orderId,
+                'date': row.createdAt,
+                'uid': row.orderUid,
+                'type': row.enum,
+                'address': row.address,
+                'warehouse': row.name,
                 'items': item_list,
+                'total': row.price / 100
             }
             orders_list.append(item)
         order_id = row.orderId
 
-    print(orders_list)
+    if len(orders_list) > 0:
+        env = Environment(loader=FileSystemLoader("templates"))
+        template = env.get_template('mail.htm')
 
-    '''
-    for row_order in res:
-        queryitem = session.query(order_item, good).where(order_item.c.orderId == row_order.id)
-        queryitem = queryitem.join(good, good.c.id == order_item.c.nmId)
-        resitem = queryitem.all()
-
-        for row_item in resitem:
-            tm = env.get_template('order_row.htm')
-    '''
+        msg = template.render(orders=orders_list)
+        print(msg)
 
 
 def send_mail():
