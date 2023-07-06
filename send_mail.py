@@ -24,6 +24,7 @@ def mail_body():
     query = query.join(office, office.c.id == warehouse.c.office)
     res = query.all()
 
+    msg = ''
     order_id = ''
     orders_list = []
     for row in res:
@@ -53,7 +54,8 @@ def mail_body():
         template = env.get_template('mail.htm')
 
         msg = template.render(orders=orders_list)
-        print(msg)
+
+    return msg
 
 
 def send_mail():
