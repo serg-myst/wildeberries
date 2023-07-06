@@ -2,7 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import MAIL_FROM, MAIL_TO, SMTP, SMTP_PORT, PASSWORD
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 from models import order, new_order, order_item, exchange, good, delivery_type, warehouse, office
 from database import session_maker
 from sqlalchemy import select
@@ -24,7 +24,7 @@ def mail_body():
     query = query.join(office, office.c.id == warehouse.c.office)
     res = query.all()
 
-    msg = ''
+    msg_body = ''
     order_id = ''
     orders_list = []
     for row in res:
@@ -53,43 +53,31 @@ def mail_body():
         env = Environment(loader=FileSystemLoader("templates"))
         template = env.get_template('mail.htm')
 
-        msg = template.render(orders=orders_list)
+        msg_body = template.render(orders=orders_list)
 
-    return msg
+    return msg_body
 
 
 def send_mail():
     query = select(exchange)
     res = session.execute(query).scalar()
     if res == 0:
-        msg = mail_body()
+        msg_body = mail_body()
 
-
-if __name__ == '__main__':
-    send_mail()
-
-"""
-
- # with open('mail.htm', 'r', encoding='utf-8') as f:
-        #    email_content = f.read()
-    
-       #     print(email_content)
-
-            '''
+        if msg_body != '':
             msg = MIMEMultipart('alternative')  # Создаем сообщение
             msg['From'] = MAIL_FROM  # Отправитель
             msg['To'] = MAIL_TO  # Получатель
             msg['Subject'] = 'Заказы к сборке Wildberries'  # Тема сообщения
-    
-            msg.attach(MIMEText(email_content, 'html'))  # Добавляем в сообщение HTML-фрагмент
-    
+
+            msg.attach(MIMEText(msg_body, 'html'))  # Добавляем в сообщение HTML-фрагмент
+
             server = smtplib.SMTP(SMTP, SMTP_PORT)  # Создаем объект SMTP
             server.starttls()
             server.login(MAIL_FROM, PASSWORD)
             server.send_message(msg)
             server.quit()
-            '''
-    #else:
-    #    log.error(f'Идет обмен данными. Письмо с новыми заказами не отправлено!')
 
-"""
+
+if __name__ == '__main__':
+    send_mail()
