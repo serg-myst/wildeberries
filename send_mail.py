@@ -1,12 +1,14 @@
 import smtplib
+from smtplib import SMTPException
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import MAIL_FROM, MAIL_TO, SMTP, SMTP_PORT, PASSWORD
 from jinja2 import Environment, FileSystemLoader
 from models import order, new_order, order_item, exchange, good, delivery_type, warehouse, office
 from database import session_maker
-from sqlalchemy import select
+from sqlalchemy import select, update
 from config import LOGGER as log
+from datetime import datetime
 
 session = session_maker()
 
@@ -27,9 +29,10 @@ def mail_body():
     msg_body = ''
     order_id = ''
     orders_list = []
-    for row in res:
+    orders_id = []
+    for index, row in enumerate(res):
         if order_id == row.orderId:
-            item = orders_list[len(orders_list) - 1]
+            item = orders_list[index - 1]
             item['items'].append({'id': row.id, 'name': row.vendorCode, 'type': row.object, 'price': row.price / 100})
             item['total'] += row.price / 100
         else:
@@ -47,6 +50,7 @@ def mail_body():
                 'total': row.price / 100
             }
             orders_list.append(item)
+            orders_id.append(row.orderId)
         order_id = row.orderId
 
     if len(orders_list) > 0:
@@ -55,28 +59,39 @@ def mail_body():
 
         msg_body = template.render(orders=orders_list)
 
-    return msg_body
+    return msg_body, orders_id
 
 
 def send_mail():
     query = select(exchange)
     res = session.execute(query).scalar()
     if res == 0:
-        msg_body = mail_body()
-
+        msg_body, orders = mail_body()
         if msg_body != '':
-            msg = MIMEMultipart('alternative')  # Создаем сообщение
-            msg['From'] = MAIL_FROM  # Отправитель
-            msg['To'] = MAIL_TO  # Получатель
-            msg['Subject'] = 'Заказы к сборке Wildberries'  # Тема сообщения
+            try:
+                msg = MIMEMultipart('alternative')  # Создаем сообщение
+                msg['From'] = MAIL_FROM  # Отправитель
+                msg['To'] = MAIL_TO  # Получатель
+                msg['Subject'] = 'Заказы к сборке Wildberries'  # Тема сообщения
 
-            msg.attach(MIMEText(msg_body, 'html'))  # Добавляем в сообщение HTML-фрагмент
+                msg.attach(MIMEText(msg_body, 'html'))  # Добавляем в сообщение HTML-фрагмент
 
-            server = smtplib.SMTP(SMTP, SMTP_PORT)  # Создаем объект SMTP
-            server.starttls()
-            server.login(MAIL_FROM, PASSWORD)
-            server.send_message(msg)
-            server.quit()
+                server = smtplib.SMTP(SMTP, SMTP_PORT)  # Создаем объект SMTP
+                server.starttls()
+                server.login(MAIL_FROM, PASSWORD)
+                server.send_message(msg)
+                server.quit()
+
+                for item in orders:
+                    query = update(new_order).values({'send': True, 'sendAt': datetime.now()}).where(
+                        new_order.c.orderId == item)
+                    session.execute(query)
+                session.commit()
+                log.info(f'Отправили новые заказы на почту {orders}')
+            except SMTPException as e:
+                log.exception(f'Ошибка отправки почты {e}')
+        else:
+            log.info(f'Отправка сообщения. Новые заказы не поступали!')
 
 
 if __name__ == '__main__':
