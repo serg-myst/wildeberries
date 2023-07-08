@@ -3,7 +3,6 @@ from models import office, warehouse, good, price
 from schemas import Office, Warehouse, Good, Price
 from api import get_office_api, get_warehouse_api, get_goods_api, get_price_api, get_orders_api
 from config import LOGGER as log
-from save_data import get_wb_order
 from send_mail import send_mail
 from sys import argv
 
