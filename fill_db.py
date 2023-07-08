@@ -27,5 +27,4 @@ def fill_exchange():
 
 
 if __name__ == '__main__':
-    fill_delivery()
-    fill_exchange()
+    pass
