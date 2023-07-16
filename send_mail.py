@@ -57,7 +57,10 @@ def mail_body():
         env = Environment(loader=FileSystemLoader("templates"))
         template = env.get_template('mail.htm')
 
-        msg_body = template.render(orders=orders_list)
+        delivery_query = select(delivery_type).order_by('enum')
+        delivery_res = session.execute(delivery_query).all()
+
+        msg_body = template.render(orders=orders_list, delivery=delivery_res)
 
     return msg_body, orders_id
 

@@ -19,9 +19,20 @@
           margin: 0;
           ">Заказы к сборке
             </h2>
-            <p class="title" style="color: #FF0000; font-weight: 400; font-size: 12px;padding-bottom: 10px;">
-                Примечание: fbs - доставка на склад Wildberries, dbs - доставка силами продавца
+            <p class="title" style="color: #FF0000; font-weight: 400; font-size: 12px; margin: 0;">
+                Примечание:
             </p>
+            {% for d in delivery %}
+            {% if loop.last %}
+                <p class="title" style="color: #FF0000; font-weight: 400; font-size: 12px;padding-bottom: 10px;  margin: 0;">
+                    {{d.enum}} - {{d.name}}
+                </p>
+                {% else %}
+                <p class="title" style="color: #FF0000; font-weight: 400; font-size: 12px; margin: 0;">
+                    {{d.enum}} - {{d.name}}
+                </p>
+            {% endif %}
+            {% endfor %}
         </div>
         <div class="order" style="border-bottom: 1px solid #008B8B; padding-bottom: 10px;">
             {% block content %}

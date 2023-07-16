@@ -1,4 +1,6 @@
-from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint
+import datetime
+
+from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint, Date
 from sqlalchemy import MetaData
 
 metadata = MetaData()
@@ -89,4 +91,14 @@ exchange = Table(
     'exchange',
     metadata,
     Column('is_started', Integer),  # 0 - обмен не запущен, 1 - обмен запущен
+)
+
+price_history = Table(
+    'price_history',
+    metadata,
+    Column('period', Date, default=datetime.date),
+    Column('nmId', Integer, ForeignKey(good.c.id)),
+    Column('price', Integer),
+    Column('discount', Integer),
+    Column('promoCode', Integer),
 )
