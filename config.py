@@ -37,3 +37,6 @@ PASSWORD = os.environ.get('PASSWORD')
 SMTP = os.environ.get('SMTP')
 SMTP_PORT = os.environ.get('SMTP_PORT')
 
+# Database connection
+DATABASE = os.environ.get('DATABASE_URL')
+
