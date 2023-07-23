@@ -1,7 +1,8 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from config import DATABASE
 
-DATABASE_URL = 'sqlite:///wildberries.db3'
+DATABASE_URL = DATABASE
 
 engine = create_engine(DATABASE_URL, echo=False)
 session_maker = sessionmaker(engine, expire_on_commit=False)
