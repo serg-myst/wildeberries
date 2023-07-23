@@ -7,23 +7,23 @@ from send_mail import send_mail
 from sys import argv
 
 if __name__ == '__main__':
-    script, type = argv
-    if type == 'n':
+    script, type_query = argv
+    if type_query == 'n':
         log.info(f'API. Начало. Получаем НСИ. {script}')
         get_wb_data(office, Office, get_office_api)
         get_wb_data(warehouse, Warehouse, get_warehouse_api)
         get_wb_data(good, Good, get_goods_api)
         get_wb_data(price, Price, get_price_api, ['nmID'])
         log.info(f'API. Окончание. Получаем НСИ.')
-    if type == 'o':
+    if type_query == 'o':
         log.info(f'API. Начало. Получаем новые заказы. {script}')
         get_wb_order(get_orders_api)
         log.info(f'API. Окончание. Получаем новые заказы.')
-    if type == 's':
+    if type_query == 's':
         log.info(f'API. Начало. Отправляем новые заказы. {script}')
         send_mail()
         log.info(f'API. Окончание. Отправляем новые заказы.')
-    if type == 'os':
+    if type_query == 'os':
         log.info(f'API. Начало. Получаем/Отправляем новые заказы. {script}')
         get_wb_order(get_orders_api)
         send_mail()
