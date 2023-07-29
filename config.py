@@ -8,6 +8,7 @@ TOKEN = os.environ.get('TOKEN')
 
 # end point
 ORDERS_URL = 'https://suppliers-api.wildberries.ru/api/v3/orders/new'
+ORDERS_ALL_URL = 'https://suppliers-api.wildberries.ru/api/v3/orders'
 OFFICES_URL = 'https://suppliers-api.wildberries.ru/api/v3/offices'
 WAREHOUSES_URL = 'https://suppliers-api.wildberries.ru/api/v3/warehouses'
 PRICES_URL = 'https://suppliers-api.wildberries.ru/public/api/v1/info'
@@ -39,4 +40,5 @@ SMTP_PORT = os.environ.get('SMTP_PORT')
 
 # Database connection
 DATABASE = os.environ.get('DATABASE_URL')
+
 
