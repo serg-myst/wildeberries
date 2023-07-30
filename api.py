@@ -1,13 +1,31 @@
-from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY, ORDERS_URL
+from config import TOKEN, PRICES_URL, WAREHOUSES_URL, OFFICES_URL, GOODS_URL, GOODS_QUERY, ORDERS_URL, ORDERS_ALL_URL
 import requests
 from requests.exceptions import ConnectionError as ConnectionErrorRequests
 from requests.exceptions import InvalidSchema
 import json
 from config import LOGGER as log
+from datetime import datetime
 
 
 def headers():
     return {'Authorization': TOKEN}
+
+
+def get_orders_by_date_api():
+    try:
+        date_to_query = int(
+            datetime.fromisoformat(
+                str(datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))).timestamp())
+        parameters = {'limit': 1000, 'next': 0, 'dateFrom': date_to_query}
+        response = requests.get(ORDERS_ALL_URL, headers=headers(), params=parameters)
+        if response.status_code != 200:
+            log.error(f'Ошибка получения данных по всем заказам за день. Статус ответа {response.status_code}')
+            raise ConnectionErrorRequests
+        content = json.loads(response.content)
+        log.info(f'Получены данные о всем заказам за день с {ORDERS_ALL_URL}')
+        return content.get('orders')
+    except ConnectionError as e:
+        log.exception(f'Ошибка ConnectionError. Данные не получены {ORDERS_ALL_URL}. Ошибка: {e}')
 
 
 def get_office_api():

@@ -34,7 +34,7 @@ def get_wb_data(table, model, method, id=None):
         log.error(f'Ошибка записи данных по {table}. {e}')
 
 
-def get_wb_order(method):
+def get_wb_order(method, send=True):
     data_list = method()
     for data in data_list:
         try:
@@ -46,7 +46,8 @@ def get_wb_order(method):
         else:
             save_data(item_head.dict(), order, ['id'])
             save_data(order_row.dict(), order_item, ['orderId', 'nmId'])
-            save_data(order_send.dict(), new_order, ['orderId'])
+            if send:
+                save_data(order_send.dict(), new_order, ['orderId'])
     session.commit()
 
 # https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#sqlite-on-conflict-insert
