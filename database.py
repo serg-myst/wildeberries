@@ -4,7 +4,7 @@ from config import DATABASE
 
 DATABASE_URL = DATABASE
 
-engine = create_engine(DATABASE_URL, echo=False)
+engine = create_engine(DATABASE_URL, echo=False, client_encoding = 'utf8')
 session_maker = sessionmaker(engine, expire_on_commit=False)
 
 # Работа с SQLAlchemy
