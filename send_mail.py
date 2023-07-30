@@ -17,7 +17,7 @@ def mail_body():
     query = session.query(new_order.c.orderId, order.c.createdAt, order.c.orderUid, delivery_type.c.enum,
                           order_item.c.price, good.c.id, good.c.vendorCode,
                           good.c.object, warehouse.c.name, office.c.address).where(
-        new_order.c.send == 0).order_by(order.c.createdAt).group_by(order.c.id, order_item.c.nmId)
+        new_order.c.send == False).order_by(order.c.createdAt)
     query = query.join(order, order.c.id == new_order.c.orderId)
     query = query.join(delivery_type, delivery_type.c.id == order.c.deliveryType)
     query = query.join(warehouse, warehouse.c.id == order.c.warehouseId)
