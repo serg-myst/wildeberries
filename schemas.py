@@ -58,9 +58,19 @@ class OrderItem(BaseModel):
     orderId: int = Field(alias='id')
     nmId: int
     price: int
+    convertedPrice: int
+    currencyCode: str
+    convertedCurrencyCode: str
     isLargeCargo: bool
+
+    @validator('currencyCode')
+    def set_currencyCode(cls, cd: str) -> str:
+        return cd.zfill(3)
+
+    @validator('convertedCurrencyCode')
+    def set_convertedCurrencyCode(cls, cd: str) -> str:
+        return cd.zfill(3)
 
 
 class NewOrder(BaseModel):
     orderId: int = Field(alias='id')
-

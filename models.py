@@ -69,12 +69,23 @@ order = Table(
     # Тип доставки: fbs - доставка на склад Wildberries, dbs - доставка силами продавца
 )
 
+currency = Table(
+    'currency',
+    metadata,
+    Column('code', String, primary_key=True),
+    Column('name', String, unique=True),
+    Column('full_name', String, unique=True),
+)
+
 order_item = Table(
     'order_item',
     metadata,
     Column('orderId', Integer, ForeignKey(order.c.id)),
     Column('nmId', Integer, ForeignKey(good.c.id)),
     Column('price', Integer),  # Цена в валюте продажи с учетом всех скидок, умноженная на 100
+    Column('convertedPrice', Integer),  # Цена в валюте продажи с учетом всех скидок, умноженная на 100
+    Column('currencyCode', ForeignKey(currency.c.code)),
+    Column('convertedCurrencyCode', ForeignKey(currency.c.code)),
     Column('isLargeCargo', Boolean),
     PrimaryKeyConstraint('orderId', 'nmId', name='id'),
 )

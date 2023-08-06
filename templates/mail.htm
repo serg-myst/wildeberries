@@ -50,7 +50,7 @@
             text-align: center;">Наименование
             </th>
             <th scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px;">Цена, руб.
+            text-align: center; width: 100px;">Цена
             </th>
         </tr>
         </thead>
@@ -73,14 +73,20 @@
             <td scope="col" class="col5" style="border: solid 1px #ccc;
             text-align: center;">{{ item['name'] }}
             </td>
+            {% if item['currency_code'] != "643" %}
             <td scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px;">{{ item['price']|int }}
+            text-align: center; width: 100px; color: red;"><b>{{ item['price']|int }} {{item['currency_code_html']}}</b>
             </td>
+            {% else %}
+            <td scope="col" class="col6" style="border: solid 1px #ccc;
+            text-align: center; width: 100px;">{{ item['price']|int }} {{item['currency_code_html']}}
+            </td>
+            {% endif %}
         </tr>
         </tbody>
         {% endfor %}
     </table>
 </div>
-<p>Позиций в заказе: {{ o['items']|length() }}. Сумма заказа: {{ o['total']|int }} руб.</p>
+<p><b>Позиций в заказе: {{ o['items']|length() }}. Сумма заказа в  {{ o['currency_code'] }}: {{ o['total']|int }}. Сумма заказа в руб. {{ o['converted_total']|int }}</b></p>
 {% endfor %}
 {% endblock %}
