@@ -22,7 +22,7 @@ def mail_body():
                           (currency_2.c.code).label('convertedCurrencyCode'),
                           good.c.id, good.c.vendorCode,
                           good.c.object, warehouse.c.name, office.c.address).where(
-        new_order.c.send == 0).order_by(order.c.createdAt)
+        new_order.c.send).order_by(order.c.createdAt)
     query = query.join(order, order.c.id == new_order.c.orderId)
     query = query.join(delivery_type, delivery_type.c.id == order.c.deliveryType)
     query = query.join(warehouse, warehouse.c.id == order.c.warehouseId)
