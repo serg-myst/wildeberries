@@ -75,18 +75,18 @@
             </td>
             {% if item['currency_code'] != "643" %}
             <td scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px; color: red;"><b>{{ "%0.2f"|format(item['price']) }} {{item['currency_code_html']}}</b>
+            text-align: center; width: 100px; color: red;"><b>{{ "%0.2f"|format(item['price']) | replace('.','-') }} {{item['currency_code_html']}}</b>
             </td>
             {% else %}
             <td scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px;">{{ "%0.2f"|format(item['price']) }} {{item['currency_code_html']}}
+            text-align: center; width: 100px;">{{ "%0.2f"|format(item['price']) | replace('.','-') }} {{item['currency_code_html']}}
             </td>
             {% endif %}
         </tr>
         </tbody>
-        {% endfor %}
+        {%- endfor %}
     </table>
 </div>
-<p><b>Позиций в заказе: {{ o['items']|length() }}. Сумма заказа в  {{ o['currency_code'] }}: {{ "%0.2f"|format(o['total']) }}. Сумма заказа в руб. {{ "%0.2f"|format(o['converted_total']) }}</b></p>
-{% endfor %}
+<p><b>Позиций в заказе: {{ o['items']|length() }}. Сумма заказа в  {{ o['currency_code'] }}: {{ "%0.2f"|format(o['total']) | replace('.','-') }}. Сумма заказа в руб. {{ "%0.2f"|format(o['converted_total']) | replace('.','-') }}</b></p>
+{%- endfor %}
 {% endblock %}
