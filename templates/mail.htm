@@ -1,92 +1,99 @@
 {% extends 'base.htm' %}
 {% block content %}
 {% for o in orders -%}
-<div class="order__header">
-    <h3>Заказ № {{ o['number'] }} от {{ o['date'].strftime('%d-%m-%Y %H:%M:%S') }}</h3>
-    <ul style="list-style: none;">
-        <li><span class="order__header-title" style="font-weight: 400;
+<div class="order"
+     style="background-color: #fff5ee; padding: 10px 10px 0px 10px; margin-bottom: 5px; margin-top: 10px; border-radius: 10px; box-shadow: 5px 5px 5px rgb(245, 245, 220);">
+    <div class="order__header">
+        <h3>Заказ № {{ o['number'] }} от {{ o['date'].strftime('%d-%m-%Y %H:%M:%S') }}</h3>
+        <ul style="list-style: none;">
+            <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
                       color: #696969;">Склад: {{ o['warehouse'] }}</span></li>
-        <li><span class="order__header-title" style="font-weight: 400;
+            <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
                       color: #696969;">ИД сборочного задания: {{ o['uid'] }}</span></li>
-        <li><span class="order__header-title" style="font-weight: 400;
+            <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
                       color: #696969;">Покупатель: Розничный покупатель</span></li>
-        <li><span class="order__header-title" style="font-weight: 400;
+            <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
                       color: #696969;">Адрес доставки: {{ o['address'] }}</span></li>
-        <li><span class="order__header-title" style="font-weight: 400;
+            <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
                       color: #696969;">Способ доставки: {{ o['type'] }} </span></li>
-    </ul>
-</div>
-<div class="order__items">
-    <table style="table-layout: fixed;
+        </ul>
+    </div>
+    <div class="order__items">
+        <table style="table-layout: fixed;
               width: 100%;
               border-collapse: collapse;
               border: 1px solid #008B8B;">
-        <thead style="font-weight: 400;
+            <thead style="font-weight: 400;
              font-size: 16px;
              padding-bottom: 10px;
              color: #696969;">
-        <tr style="border: solid 1px #ccc;
+            <tr style="border: solid 1px #ccc;
             text-align: center;">
-            <th scope="col" class="col1" style="border: solid 1px #ccc;
+                <th scope="col" class="col1" style="border: solid 1px #ccc;
             text-align: center; width: 30px;">№ п/п
-            </th>
-            <th scope="col" class="col2" style="border: solid 1px #ccc;
+                </th>
+                <th scope="col" class="col2" style="border: solid 1px #ccc;
             text-align: center; width: 120px;">Код wb.
-            </th>
-            <th scope="col" class="col4" style="border: solid 1px #ccc;
+                </th>
+                <th scope="col" class="col4" style="border: solid 1px #ccc;
             text-align: center;">Вид продукции
-            </th>
-            <th scope="col" class="col5" style="border: solid 1px #ccc;
+                </th>
+                <th scope="col" class="col5" style="border: solid 1px #ccc;
             text-align: center;">Наименование
-            </th>
-            <th scope="col" class="col6" style="border: solid 1px #ccc;
+                </th>
+                <th scope="col" class="col6" style="border: solid 1px #ccc;
             text-align: center; width: 100px;">Цена
-            </th>
-        </tr>
-        </thead>
-        {% for item in o['items'] -%}
-        <tbody style="font-weight: 400;
+                </th>
+            </tr>
+            </thead>
+            {% for item in o['items'] -%}
+            <tbody style="font-weight: 400;
              font-size: 16px;
              padding-bottom: 10px;
              color: #696969;">
-        <tr style="border: solid 1px #ccc;
+            <tr style="border: solid 1px #ccc;
             text-align: center;">
-            <td scope="col" class="col1" style="border: solid 1px #ccc;
+                <td scope="col" class="col1" style="border: solid 1px #ccc;
             text-align: center; width: 30px;">{{ loop.index }}
-            </td>
-            <td scope="col" class="col2" style="border: solid 1px #ccc;
+                </td>
+                <td scope="col" class="col2" style="border: solid 1px #ccc;
             text-align: center; width: 120px;">{{ item['id'] }}
-            </td>
-            <td scope="col" class="col4" style="border: solid 1px #ccc;
+                </td>
+                <td scope="col" class="col4" style="border: solid 1px #ccc;
             text-align: center;">{{ item['type'] }}
-            </td>
-            <td scope="col" class="col5" style="border: solid 1px #ccc;
+                </td>
+                <td scope="col" class="col5" style="border: solid 1px #ccc;
             text-align: center;">{{ item['name'] }}
-            </td>
-            {% if item['currency_code'] != "643" %}
-            <td scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px; color: red;"><b>{{ "%0.2f"|format(item['price']) | replace('.','-') }} {{item['currency_code_html']}}</b>
-            </td>
-            {% else %}
-            <td scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px;">{{ "%0.2f"|format(item['price']) | replace('.','-') }} {{item['currency_code_html']}}
-            </td>
-            {% endif %}
-        </tr>
-        </tbody>
-        {%- endfor %}
-    </table>
+                </td>
+                {% if item['currency_code'] != "643" %}
+                <td scope="col" class="col6" style="border: solid 1px #ccc;
+            text-align: center; width: 100px; color: red;"><b>{{ "%0.2f"|format(item['price']) | replace('.','-') }}
+                    {{item['currency_code_html']}}</b>
+                </td>
+                {% else %}
+                <td scope="col" class="col6" style="border: solid 1px #ccc;
+            text-align: center; width: 100px;">{{ "%0.2f"|format(item['price']) | replace('.','-') }}
+                    {{item['currency_code_html']}}
+                </td>
+                {% endif %}
+            </tr>
+            </tbody>
+            {%- endfor %}
+        </table>
+    </div>
+    <p><b>Позиций в заказе: {{ o['items']|length() }}. Сумма заказа в {{ o['currency_code'] }}: {{
+        "%0.2f"|format(o['total']) | replace('.','-') }}. Сумма заказа в руб. {{ "%0.2f"|format(o['converted_total']) |
+        replace('.','-') }}</b></p>
 </div>
-<p><b>Позиций в заказе: {{ o['items']|length() }}. Сумма заказа в  {{ o['currency_code'] }}: {{ "%0.2f"|format(o['total']) | replace('.','-') }}. Сумма заказа в руб. {{ "%0.2f"|format(o['converted_total']) | replace('.','-') }}</b></p>
 {%- endfor %}
 {% endblock %}
