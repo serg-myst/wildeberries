@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
+from typing import Optional
 
 
 class Office(BaseModel):
@@ -61,7 +62,7 @@ class OrderItem(BaseModel):
     convertedPrice: int
     currencyCode: str
     convertedCurrencyCode: str
-    isLargeCargo: bool
+    isLargeCargo: Optional[bool] = False  # 23.10.2023 is optional
 
     @validator('currencyCode')
     def set_currencyCode(cls, cd: str) -> str:
