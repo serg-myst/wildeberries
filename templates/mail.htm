@@ -4,16 +4,16 @@
 <div class="order"
      style="background-color: #fff5ee; padding: 10px 10px 0px 10px; margin-bottom: 5px; margin-top: 10px; border-radius: 10px; box-shadow: 5px 5px 5px rgb(245, 245, 220);">
     <div class="order__header">
-        <h3>Заказ № {{ o['number'] }} от {{ o['date'].strftime('%d-%m-%Y %H:%M:%S') }}</h3>
+        <h3>Заказ № {{ o.orderId }} от {{ o.order.createdAt.strftime('%d-%m-%Y %H:%M:%S') }}</h3>
         <ul style="list-style: none;">
             <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
-                      color: #696969;">Склад: {{ o['warehouse'] }}</span></li>
+                      color: #696969;">Склад: {{ o.order.warehouse.name }}</span></li>
             <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
-                      color: #696969;">ИД сборочного задания: {{ o['uid'] }}</span></li>
+                      color: #696969;">ИД сборочного задания: {{ o.order.orderUid }}</span></li>
             <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
@@ -21,11 +21,11 @@
             <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
-                      color: #696969;">Адрес доставки: {{ o['address'] }}</span></li>
+                      color: #696969;">Адрес доставки: {{ o.order.warehouse.delivery_office.address }}</span></li>
             <li><span class="order__header-title" style="font-weight: 400;
                       font-size: 18px;
                       padding-bottom: 10px;
-                      color: #696969;">Способ доставки: {{ o['type'] }} </span></li>
+                      color: #696969;">Способ доставки: {{ o.order.delivery_type.enum }} </span></li>
         </ul>
     </div>
     <div class="order__items">
@@ -56,7 +56,7 @@
                 </th>
             </tr>
             </thead>
-            {% for item in o['items'] -%}
+            {% for item in o.order.items -%}
             <tbody style="font-weight: 400;
              font-size: 16px;
              padding-bottom: 10px;
@@ -67,23 +67,23 @@
             text-align: center; width: 30px;">{{ loop.index }}
                 </td>
                 <td scope="col" class="col2" style="border: solid 1px #ccc;
-            text-align: center; width: 120px;">{{ item['id'] }}
+            text-align: center; width: 120px;">{{ item.good.id }}
                 </td>
                 <td scope="col" class="col4" style="border: solid 1px #ccc;
-            text-align: center;">{{ item['type'] }}
+            text-align: center;">{{ item.good.object }}
                 </td>
                 <td scope="col" class="col5" style="border: solid 1px #ccc;
-            text-align: center;">{{ item['name'] }}
+            text-align: center;">{{ item.good.vendorCode }}
                 </td>
-                {% if item['currency_code'] != "643" %}
+                {% if item.currencyCode != "643" %}
                 <td scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px; color: red;"><b>{{ "%0.2f"|format(item['price']) | replace('.','-') }}
-                    {{item['currency_code_html']}}</b>
+            text-align: center; width: 100px; color: red;"><b>{{ "%0.2f"|format(item.price / 100) | replace('.','-') }}
+                    {{codes[item.currencyCode]}}</b>
                 </td>
                 {% else %}
                 <td scope="col" class="col6" style="border: solid 1px #ccc;
-            text-align: center; width: 100px;">{{ "%0.2f"|format(item['price']) | replace('.','-') }}
-                    {{item['currency_code_html']}}
+            text-align: center; width: 100px;">{{ "%0.2f"|format(item.convertedPrice / 100) | replace('.','-') }}
+                    {{codes[item.currencyCode]}}
                 </td>
                 {% endif %}
             </tr>
@@ -91,8 +91,9 @@
             {%- endfor %}
         </table>
     </div>
-    <p><b>Позиций в заказе: {{ o['items']|length() }}. Сумма заказа в {{ o['currency_code'] }}: {{
-        "%0.2f"|format(o['total']) | replace('.','-') }}. Сумма заказа в руб. {{ "%0.2f"|format(o['converted_total']) |
+    <p><b>Позиций в заказе: {{ o.order.items|length() }}. Сумма заказа в {{ codes[o.order.items[0].currencyCode] }}: {{
+        "%0.2f"|format(o.order.items | sum(attribute='price')/100) | replace('.','-') }}. Сумма заказа в руб. {{
+        "%0.2f"|format(o.order.items | sum(attribute='convertedPrice')/100) |
         replace('.','-') }}</b></p>
 </div>
 {%- endfor %}

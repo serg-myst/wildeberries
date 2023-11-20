@@ -2,8 +2,10 @@ import datetime
 
 from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint, Date
 from sqlalchemy import MetaData
+from sqlalchemy.orm import registry, relationship
 
 metadata = MetaData()
+mapper_registry = registry()
 
 office = Table(
     'office',
@@ -17,6 +19,12 @@ office = Table(
     Column('selected', Boolean),
 )
 
+
+class Office:
+    def __repr__(self):
+        return f'name={self.name}'
+
+
 warehouse = Table(
     'warehouse',
     metadata,
@@ -24,6 +32,12 @@ warehouse = Table(
     Column('office', Integer, ForeignKey(office.c.id)),
     Column('name', String),
 )
+
+
+class Warehouse:
+    def __repr__(self):
+        return f'id={self.id} - {self.name}'
+
 
 good = Table(
     'good',
@@ -37,6 +51,12 @@ good = Table(
     Column('updateAt', DateTime),
 )
 
+
+class Good:
+    def __repr__(self):
+        return f'id={self.id} - {self.object}'
+
+
 price = Table(
     'price',
     metadata,
@@ -46,6 +66,12 @@ price = Table(
     Column('promoCode', Integer),
 )
 
+
+class Price(object):
+    def __repr__(self):
+        return f'id={self.nmID} - {self.price}'
+
+
 delivery_type = Table(
     'delivery_type',
     metadata,
@@ -53,6 +79,12 @@ delivery_type = Table(
     Column('enum', String),
     Column('name', String),
 )
+
+
+class DeliveryType:
+    def __repr__(self):
+        return f'{self.name}'
+
 
 order = Table(
     'order_head',
@@ -69,6 +101,12 @@ order = Table(
     # Тип доставки: fbs - доставка на склад Wildberries, dbs - доставка силами продавца
 )
 
+
+class Order:
+    def __repr__(self):
+        return f'id={self.id} - {self.createdAt}'
+
+
 currency = Table(
     'currency',
     metadata,
@@ -76,6 +114,12 @@ currency = Table(
     Column('name', String, unique=True),
     Column('full_name', String, unique=True),
 )
+
+
+class Currency:
+    def __repr__(self):
+        return f'{self.name}'
+
 
 order_item = Table(
     'order_item',
@@ -90,6 +134,12 @@ order_item = Table(
     PrimaryKeyConstraint('orderId', 'nmId', name='id'),
 )
 
+
+class OrderItem:
+    def __repr__(self):
+        return f'order id={self.orderId} good={self.nmId}'
+
+
 new_order = Table(
     'new_order',
     metadata,
@@ -97,6 +147,11 @@ new_order = Table(
     Column('send', Boolean, default=False),
     Column('sendAt', DateTime),
 )
+
+class NewOrder:
+    def __repr__(self):
+        return f'new order id={self.orderId}'
+
 
 exchange = Table(
     'exchange',
@@ -112,4 +167,41 @@ price_history = Table(
     Column('price', Integer),
     Column('discount', Integer),
     Column('promoCode', Integer),
+    Column('id', Integer, primary_key=True)
 )
+
+class PriceHistory:
+    def __repr__(self):
+        return f'good={self.nmId} period={self.period} price={self.price}'
+
+
+mapper_registry.map_imperatively(Price, price, properties={
+    'good': relationship(Good, back_populates="prices")
+})
+mapper_registry.map_imperatively(Good, good, properties={
+    'prices': relationship(Price, back_populates="good"),
+    'price_history': relationship(PriceHistory, back_populates="good")
+})
+mapper_registry.map_imperatively(Order, order, properties={
+    'items': relationship(OrderItem, back_populates="order"),
+    'warehouse': relationship(Warehouse),
+    'delivery_type': relationship(DeliveryType)
+})
+mapper_registry.map_imperatively(OrderItem, order_item, properties={
+    'order': relationship(Order, back_populates="items"),
+    'good': relationship(Good),
+    'currency': relationship(Currency, foreign_keys='OrderItem.currencyCode'),
+    'converted_currency': relationship(Currency, foreign_keys='OrderItem.convertedCurrencyCode')
+})
+mapper_registry.map_imperatively(NewOrder, new_order, properties={
+    'order': relationship(Order)
+})
+mapper_registry.map_imperatively(Office, office)
+mapper_registry.map_imperatively(Currency, currency)
+mapper_registry.map_imperatively(Warehouse, warehouse, properties={
+    'delivery_office': relationship(Office),
+})
+mapper_registry.map_imperatively(DeliveryType, delivery_type)
+mapper_registry.map_imperatively(PriceHistory, price_history, properties={
+    'good': relationship(Good, back_populates="price_history")
+})
