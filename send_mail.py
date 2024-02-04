@@ -11,6 +11,7 @@ from config import LOGGER as log
 from config import CURRENCY_CODES
 from datetime import datetime
 from sqlalchemy.orm import selectinload
+from save_data import save_error
 
 session = session_maker()
 
@@ -63,9 +64,13 @@ def send_mail():
                         new_order.c.orderId == item.orderId)
                     session.execute(query)
                 session.commit()
-                log.info(f'Отправили новые заказы на почту {orders}')
+                mes_txt = f'Отправили новые заказы на почту {orders}'
+                save_error(mes_txt, False)
+                log.info(mes_txt)
             except SMTPException as e:
-                log.exception(f'Ошибка отправки почты {e}')
+                err = f'Ошибка отправки почты {e}'
+                save_error(err)
+                log.exception(err)
         else:
             log.info(f'Отправка сообщения. Новые заказы не поступали!')
 

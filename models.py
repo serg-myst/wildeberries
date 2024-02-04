@@ -1,6 +1,7 @@
 import datetime
 
-from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint, Date
+from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, PrimaryKeyConstraint, Date, \
+    TIMESTAMP
 from sqlalchemy import MetaData
 from sqlalchemy.orm import registry, relationship
 
@@ -17,6 +18,17 @@ office = Table(
     Column('longitude', Float),
     Column('latitude', Float),
     Column('selected', Boolean),
+)
+
+logs_table = Table(
+    'logs',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column('logdate', TIMESTAMP),
+    Column('logtext', String),
+    Column('is_error', Boolean),
+    Column('send', Boolean),
+    Column('send_at', TIMESTAMP),
 )
 
 
@@ -148,6 +160,7 @@ new_order = Table(
     Column('sendAt', DateTime),
 )
 
+
 class NewOrder:
     def __repr__(self):
         return f'new order id={self.orderId}'
@@ -169,6 +182,7 @@ price_history = Table(
     Column('promoCode', Integer),
     Column('id', Integer, primary_key=True)
 )
+
 
 class PriceHistory:
     def __repr__(self):

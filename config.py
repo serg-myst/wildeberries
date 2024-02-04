@@ -44,6 +44,10 @@ DATABASE = os.environ.get('DATABASE_URL')
 # Base type
 BASE_TYPE = os.environ.get('USE_BASE')
 
+# Bot
+BOT_ID = os.environ.get('BOT')
+USER_ID = os.environ.get('USER_ID')
+
 # HTML code currency
 CURRENCY_CODES = {
     '643': '&#8381;',
