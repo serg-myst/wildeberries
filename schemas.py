@@ -24,9 +24,9 @@ class Good(BaseModel):
     updateAt: datetime
     vendorCode: str
     brand: str
-    object: str
+    object: str = Field(alias='subjectName')
     imtID: int
-    isProhibited: bool
+    isProhibited: Optional[bool] = None
 
 
 class Price(BaseModel):
