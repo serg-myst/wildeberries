@@ -21,12 +21,12 @@ class Warehouse(BaseModel):
 
 class Good(BaseModel):
     id: int = Field(alias='nmID')
-    updateAt: datetime
+    updateAt: datetime = Field(alias='updatedAt')
     vendorCode: str
     brand: str
     object: str = Field(alias='subjectName')
     imtID: int
-    isProhibited: Optional[bool] = None
+    isProhibited: Optional[bool] = False
 
 
 class Price(BaseModel):
