@@ -12,7 +12,7 @@ ORDERS_ALL_URL = 'https://suppliers-api.wildberries.ru/api/v3/orders'
 OFFICES_URL = 'https://suppliers-api.wildberries.ru/api/v3/offices'
 WAREHOUSES_URL = 'https://suppliers-api.wildberries.ru/api/v3/warehouses'
 PRICES_URL = 'https://suppliers-api.wildberries.ru/public/api/v1/info'
-GOODS_URL = 'https://suppliers-api.wildberries.ru/content/v2/cards/cursor/list'
+GOODS_URL = 'https://content-api.wildberries.ru/content/v2/get/cards/list?locale=ru'
 
 GOODS_QUERY = {
     "sort": {
