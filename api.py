@@ -91,7 +91,7 @@ def get_goods_api():
             log.error(f'Ошибка получения данных по товарам. Статус ответа {response.status_code}')
             raise ConnectionErrorRequests
         content = json.loads(response.content)
-        content_data = content.get('data').get('cards')
+        content_data = content.get('cards')
         if content_data is None:
             err_txt = (f'Ошибка получения данных по товарам. Ошибка разбора полученного файла.'
                        f' Нет ключа: get("data").get("cards")')
