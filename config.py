@@ -15,9 +15,9 @@ PRICES_URL = 'https://suppliers-api.wildberries.ru/public/api/v1/info'
 GOODS_URL = 'https://content-api.wildberries.ru/content/v2/get/cards/list?locale=ru'
 
 GOODS_QUERY = {
-    "sort": {
+    "settings": {
         "cursor": {
-            "limit": 1000
+            "limit": 100
         },
         "filter": {
             "withPhoto": -1
