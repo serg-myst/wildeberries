@@ -7,12 +7,12 @@ load_dotenv()
 TOKEN = os.environ.get('TOKEN')
 
 # end point
-ORDERS_URL = 'https://suppliers-api.wildberries.ru/api/v3/orders/new'
-ORDERS_ALL_URL = 'https://marketplace-api.wildberries.ru/api/v3/orders'
-OFFICES_URL = 'https://suppliers-api.wildberries.ru/api/v3/offices'
-WAREHOUSES_URL = 'https://suppliers-api.wildberries.ru/api/v3/warehouses'
-PRICES_URL = 'https://suppliers-api.wildberries.ru/public/api/v1/info'
-GOODS_URL = 'https://content-api.wildberries.ru/content/v2/get/cards/list?locale=ru'
+ORDERS_URL = os.environ.get('ORDERS_URL')
+ORDERS_ALL_URL = os.environ.get('ORDERS_ALL_URL')
+OFFICES_URL = os.environ.get('OFFICES_URL')
+WAREHOUSES_URL = os.environ.get('WAREHOUSES_URL')
+PRICES_URL = os.environ.get('PRICES_URL')
+GOODS_URL = os.environ.get('GOODS_URL')
 
 GOODS_QUERY = {
     "settings": {
