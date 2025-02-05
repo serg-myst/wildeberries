@@ -20,7 +20,9 @@ def get_orders_by_date_api():
         parameters = {'limit': 1000, 'next': 0, 'dateFrom': date_to_query}
         response = requests.get(ORDERS_ALL_URL, headers=headers(), params=parameters)
         if response.status_code != 200:
-            err_txt = f'Ошибка получения данных по всем заказам за день. Статус ответа {response.status_code}'
+            content = json.loads(response.content)
+            err_txt = (f'Ошибка получения данных по всем заказам за день. Статус ответа {response.status_code}.'
+                       f' Текст ответа {content.statusText}')
             save_error(err_txt)
             log.error(err_txt)
             raise ConnectionErrorRequests
