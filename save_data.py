@@ -16,12 +16,15 @@ def save_error(txt, is_error=True):
     session.commit()
 
 
-def save_data(item, table, id):
+def save_data(item, table, id, handle_conflicts=False):
     try:
         insert_stmt = insert(table).values(item)
-        do_update_stmt = insert_stmt.on_conflict_do_update(
-            index_elements=id,
-            set_=item)
+        if handle_conflicts:
+            do_update_stmt = insert_stmt.on_conflict_do_nothing(index_elements=id)
+        else:
+            do_update_stmt = insert_stmt.on_conflict_do_update(
+                index_elements=id,
+                set_=item)
         session.execute(do_update_stmt)
     except SQLAlchemyError as err:
         save_error(str(err))
@@ -64,6 +67,9 @@ def get_wb_order(method, send=True):
             save_data(order_row.dict(), order_item, ['orderId', 'nmId'])
             if send:
                 save_data(order_send.dict(), new_order, ['orderId'])
+            else:
+                save_data(order_send.dict(), new_order, ['orderId'], True)
+
     session.commit()
 
 
